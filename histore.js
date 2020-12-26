@@ -13,7 +13,7 @@
 
 export default function histore() {
 	// Server
-	if (history === undefined) {
+	if (typeof history === 'undefined') {
 		return { get() {}, set () {} };
 	}
 
