@@ -27,10 +27,13 @@ export default function histore() {
 		//state[key] = value;
 		//history.replaceState(state);
 	};
+	const flush = () => {
+		history.replaceState(transit);
+	}
 	const wrap = m => (state, title, url) => (
 		m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
 	);
 	history.pushState = wrap(history.pushState);
 	history.replaceState = wrap(history.replaceState);
-	return { set, get };
+	return { set, get, flush };
 }
