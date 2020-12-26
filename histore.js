@@ -17,14 +17,18 @@ export default function histore() {
 		return { get() {}, set () {} };
 	}
 
+	const transit = {}
+
 	const get = key => history.state && history.state[key];
 	const set = (key, value) => {
-		const state = {};
-		state[key] = value;
-		history.replaceState(state);
+		transit[key] = value;
+
+		//const state = {};
+		//state[key] = value;
+		//history.replaceState(state);
 	};
 	const wrap = m => (state, title, url) => (
-		m.call(history, Object.assign({}, history.state, state || {}), title, url)
+		m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
 	);
 	history.pushState = wrap(history.pushState);
 	history.replaceState = wrap(history.replaceState);
