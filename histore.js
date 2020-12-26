@@ -53,7 +53,7 @@ export default function histore() {
 	const wrap = m => (state, title, url) => {
 		return m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
 	}
-	history.pushState = wrapPush(history.pushState);
+	history.pushState = wrap(history.pushState);
 	history.replaceState = wrap(history.replaceState);
 	return { set, get, flush, setEmpty };
 }
