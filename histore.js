@@ -12,6 +12,11 @@
  */
 
 export default function histore() {
+	// Server
+	if (history === undefined) {
+		return { get() {}, set () {} };
+	}
+
 	const get = key => history.state && history.state[key];
 	const set = (key, value) => {
 		const state = {};
