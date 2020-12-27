@@ -26,6 +26,7 @@ export default function histore() {
 	const get = key => history.state && history.state[key];
 	const set = (key, value) => {
 		transit[key] = value;
+		console.log(`*** Set transit: ${key} / ${value}`)
 
 		//const state = {};
 		//state[key] = value;
@@ -35,25 +36,34 @@ export default function histore() {
 		empty = obj;
 	};
 	const flush = () => {
-		history.replaceState(transit, document.title);
+		console.log(`*** Flush:`)
+		console.log(transit)
+
+		history.replaceState(transit);
 	}
 	const wrapPush = m => (state, title, url) => {
-		previousReplaceState(Object.assign({}, history.state, transit), document.title)
+		console.log(`PushState called`)
+
+		previousReplaceState(Object.assign({}, history.state, transit))
 
 		// Reset transit
 		transit = {}
+
+		/*transit = {}
 		for (var prop in empty) {
 			if (Object.prototype.hasOwnProperty.call(empty, prop)) {
 				transit[prop] = obj[prop];
 			}
-		}
+		}*/
+
+		return m.call(history, Object.assign({}, state || {}, transit), title, url)
+	}
+	const wrap = m => (state, title, url) => {
+		console.log(`ReplaceState called`)
 
 		return m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
 	}
-	const wrap = m => (state, title, url) => {
-		return m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
-	}
-	history.pushState = wrap(history.pushState);
+	history.pushState = wrapPush(history.pushState);
 	history.replaceState = wrap(history.replaceState);
 	return { set, get, flush, setEmpty };
 }
