@@ -38,8 +38,6 @@ export default function histore() {
 	}
 
 	const flush = () => {
-		console.log(`FLUSH`)
-		console.log(window.__histore_transit)
 		history.replaceState(window.__histore_transit);
 	}
 
