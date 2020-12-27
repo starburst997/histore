@@ -41,18 +41,19 @@ export default function histore() {
 
 		history.replaceState(window.transit);
 	}
-	
+
 	const wrap = m => (state, title, url) => {
 		console.log(`ReplaceState called`)
-		console.log(Object.assign({}, history.state, state || {}, window.transit))
+		console.log(Object.assign({}, history.state, state || {}))
 
-		return m.call(history, Object.assign({}, history.state, state || {}, window.transit), title, url)
+		return m.call(history, Object.assign({}, history.state, state || {}), title, url)
 	}
 
 	const wrapPush = m => (state, title, url) => {
 		console.log(`PushState called`)
 		history.replaceState(window.transit)
 
+		// TODO: Reset function here
 		window.transit.position = 0
 
 		console.log(Object.assign({}, history.state, state || {}, window.transit))
