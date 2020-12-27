@@ -18,53 +18,46 @@ export default function histore() {
 	}
 
 	let initialized = true
-	if (window.transit === undefined) {
-		window.transit = {}
+	if (window.__histore_transit === undefined) {
+		window.__histore_transit = {}
 		initialized = false
 	}
 
-	const previousReplaceState = history.replaceState
-	const previousPushState = history.pushState
-
-	const get = key => history.state && history.state[key];
+	const get = key => history.state && history.state[key]
 	const set = (key, value) => {
-		window.transit[key] = value;
-		console.log(`*** Set transit: ${key} / ${value}`)
-
-		//const state = {};
-		//state[key] = value;
-		//history.replaceState(state);
-	};
-	const flush = () => {
-		console.log(`*** Flush:`)
-		console.log(window.transit)
-
-		history.replaceState(window.transit);
+		window.__histore_transit[key] = value;
 	}
 
-	const wrap = m => (state, title, url) => {
-		console.log(`ReplaceState called`)
-		console.log(Object.assign({}, history.state, state || {}))
+	const reset = (state) => {
+		window.__histore_reset = state;
+	}
 
+	const flush = () => {
+		history.replaceState(window.__histore_transit);
+	}
+
+	const wrapReplace = m => (state, title, url) => {
 		return m.call(history, Object.assign({}, history.state, state || {}), title, url)
 	}
 
 	const wrapPush = m => (state, title, url) => {
-		console.log(`PushState called`)
-		history.replaceState(window.transit)
+		history.replaceState(window.__histore_transit)
 
-		// TODO: Reset function here
-		window.transit.position = 0
+		if (window.__histore_reset !== undefined) {
+			for (var prop in window.__histore_reset) {
+				if (Object.prototype.hasOwnProperty.call(window.__histore_reset, prop)) {
+					window.__histore_transit[prop] = window.__histore_reset[prop]
+				}
+			}
+		}
 
-		console.log(Object.assign({}, history.state, state || {}, window.transit))
-
-		return m.call(history, Object.assign({}, history.state, state || {}, window.transit), title, url)
+		return m.call(history, Object.assign({}, history.state, state || {}, window.__histore_transit), title, url)
 	}
 
 	if (!initialized) {
 		history.pushState = wrapPush(history.pushState);
-		history.replaceState = wrap(history.replaceState);
+		history.replaceState = wrapReplace(history.replaceState);
 	}
 
-	return { set, get, flush };
+	return { set, get, flush, reset };
 }
