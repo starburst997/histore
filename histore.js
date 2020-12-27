@@ -28,6 +28,8 @@ export default function histore() {
 		window.__histore_transit[key] = value;
 	}
 
+	const getTransit = key => window.__histore_transit[key]
+
 	const reset = (state) => {
 		window.__histore_reset = state;
 	}
@@ -59,5 +61,5 @@ export default function histore() {
 		history.replaceState = wrapReplace(history.replaceState);
 	}
 
-	return { set, get, flush, reset };
+	return { set, get, getTransit, flush, reset };
 }
