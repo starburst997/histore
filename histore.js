@@ -41,32 +41,27 @@ export default function histore() {
 
 		history.replaceState(window.transit);
 	}
+	
+	const wrap = m => (state, title, url) => {
+		console.log(`ReplaceState called`)
+		console.log(Object.assign({}, history.state, state || {}, window.transit))
+
+		return m.call(history, Object.assign({}, history.state, state || {}, window.transit), title, url)
+	}
 
 	const wrapPush = m => (state, title, url) => {
 		console.log(`PushState called`)
+		history.replaceState(window.transit)
 
-		previousReplaceState(Object.assign({}, history.state, window.transit))
+		window.transit.position = 0
 
-		// Reset transit
-		window.transit = {}
-
-		/*transit = {}
-		for (var prop in empty) {
-			if (Object.prototype.hasOwnProperty.call(empty, prop)) {
-				transit[prop] = obj[prop];
-			}
-		}*/
-
-		return m.call(history, Object.assign({}, state || {}, window.transit), title, url)
-	}
-	const wrap = m => (state, title, url) => {
-		console.log(`ReplaceState called`)
+		console.log(Object.assign({}, history.state, state || {}, window.transit))
 
 		return m.call(history, Object.assign({}, history.state, state || {}, window.transit), title, url)
 	}
 
 	if (!initialized) {
-		history.pushState = wrap(history.pushState);
+		history.pushState = wrapPush(history.pushState);
 		history.replaceState = wrap(history.replaceState);
 	}
 
