@@ -45,10 +45,10 @@ export default function histore() {
 	const wrapPush = m => (state, title, url) => {
 		console.log(`PushState called`)
 
-		previousReplaceState(Object.assign({}, history.state, transit))
+		previousReplaceState(Object.assign({}, history.state, window.transit))
 
 		// Reset transit
-		transit = {}
+		window.transit = {}
 
 		/*transit = {}
 		for (var prop in empty) {
@@ -57,12 +57,12 @@ export default function histore() {
 			}
 		}*/
 
-		return m.call(history, Object.assign({}, state || {}, transit), title, url)
+		return m.call(history, Object.assign({}, state || {}, window.transit), title, url)
 	}
 	const wrap = m => (state, title, url) => {
 		console.log(`ReplaceState called`)
 
-		return m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
+		return m.call(history, Object.assign({}, history.state, state || {}, window.transit), title, url)
 	}
 
 	if (!initialized) {
