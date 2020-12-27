@@ -20,12 +20,15 @@ export default function histore() {
 	let initialized = true
 	if (window.__histore_transit === undefined) {
 		window.__histore_transit = {}
+		window.__histore_transit_id = -1
 		initialized = false
 	}
 
 	const get = key => history.state && history.state[key]
 	const set = (key, value) => {
+		clearTimeout(window.__histore_transit_id)
 		window.__histore_transit[key] = value;
+		window.__histore_transit_id = setTimeout(() => flush(), 100) // Throttle for chrome
 	}
 
 	const getTransit = key => window.__histore_transit[key]
