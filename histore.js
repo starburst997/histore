@@ -17,30 +17,31 @@ export default function histore() {
 		return { get() {}, set () {} };
 	}
 
-	let transit = {}
-	let empty = {}
+	let initialized = true
+	if (window.transit === undefined) {
+		window.transit = {}
+		initialized = false
+	}
 
 	const previousReplaceState = history.replaceState
 	const previousPushState = history.pushState
 
 	const get = key => history.state && history.state[key];
 	const set = (key, value) => {
-		transit[key] = value;
+		window.transit[key] = value;
 		console.log(`*** Set transit: ${key} / ${value}`)
 
 		//const state = {};
 		//state[key] = value;
 		//history.replaceState(state);
 	};
-	const setEmpty = (obj) => {
-		empty = obj;
-	};
 	const flush = () => {
 		console.log(`*** Flush:`)
-		console.log(transit)
+		console.log(window.transit)
 
-		history.replaceState(transit);
+		history.replaceState(window.transit);
 	}
+
 	const wrapPush = m => (state, title, url) => {
 		console.log(`PushState called`)
 
@@ -63,7 +64,11 @@ export default function histore() {
 
 		return m.call(history, Object.assign({}, history.state, state || {}, transit), title, url)
 	}
-	history.pushState = wrapPush(history.pushState);
-	history.replaceState = wrap(history.replaceState);
-	return { set, get, flush, setEmpty };
+
+	if (!initialized) {
+		history.pushState = wrap(history.pushState);
+		history.replaceState = wrap(history.replaceState);
+	}
+
+	return { set, get, flush };
 }
