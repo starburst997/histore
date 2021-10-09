@@ -14,7 +14,7 @@
 export default function histore() {
 	// Server
 	if (typeof history === 'undefined') {
-		return { get() {}, set() {}, reset() {}, flush() {} };
+		return { get() {}, set() {}, reset() {}, flush() {} }
 	}
 
 	let initialized = true
@@ -25,10 +25,15 @@ export default function histore() {
 	}
 
 	const get = key => history.state && history.state[key]
-	const set = (key, value) => {
+	const set = (key, value, immediate = false) => {
 		clearTimeout(window.__histore_transit_id)
-		window.__histore_transit[key] = value;
-		window.__histore_transit_id = setTimeout(() => flush(), 100) // Throttle for chrome
+		window.__histore_transit[key] = value
+		
+		if (immediate) {
+			flush()
+		} else {
+			window.__histore_transit_id = setTimeout(() => flush(), 100) // Throttle for chrome
+		} 
 	}
 
 	const getTransit = key => window.__histore_transit[key]
@@ -38,7 +43,7 @@ export default function histore() {
 	}
 
 	const flush = () => {
-		history.replaceState(window.__histore_transit);
+		history.replaceState(window.__histore_transit)
 	}
 
 	const wrapReplace = m => (state, title, url) => {
@@ -60,9 +65,9 @@ export default function histore() {
 	}
 
 	if (!initialized) {
-		history.pushState = wrapPush(history.pushState);
-		history.replaceState = wrapReplace(history.replaceState);
+		history.pushState = wrapPush(history.pushState)
+		history.replaceState = wrapReplace(history.replaceState)
 	}
 
-	return { set, get, getTransit, flush, reset };
+	return { set, get, getTransit, flush, reset }
 }
