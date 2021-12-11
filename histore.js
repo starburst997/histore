@@ -36,6 +36,10 @@ export default function histore() {
 		} 
 	}
 
+	const setTransit = (key, value) => {
+		window.__histore_transit[key] = value 
+	}
+
 	const getTransit = key => window.__histore_transit[key]
 
 	const reset = (state) => {
@@ -69,5 +73,5 @@ export default function histore() {
 		history.replaceState = wrapReplace(history.replaceState)
 	}
 
-	return { set, get, getTransit, flush, reset }
+	return { set, get, getTransit, setTransit, flush, reset }
 }
