@@ -14,7 +14,7 @@
 export default function histore() {
 	// Server
 	if (typeof history === 'undefined') {
-		return { get() {}, set() {}, reset() {}, flush() {} }
+		return { get() {}, set() {}, getTransit() {}, setTransit() {}, reset() {}, flush() {} }
 	}
 
 	let initialized = true
